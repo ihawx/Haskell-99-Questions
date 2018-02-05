@@ -118,3 +118,36 @@ slice x a b
  |a > b = []
  |a == b = [x !! (a-1)]
  |otherwise = take (b-a+1) $ drop (a-1) x
+
+{-  Problem 19
+
+(**) Rotate a list N places to the left.
+Hint: Use the predefined functions length and (++).
+Examples in Haskell:
+*Main> rotate ['a','b','c','d','e','f','g','h'] 3
+"defghabc" 
+*Main> rotate ['a','b','c','d','e','f','g','h'] (-2)
+"ghabcdef" -}
+
+rotate :: [a] -> Int -> [a]
+rotate x 0 = x
+rotate [] _ = []
+rotate x n
+ |n>0 = let l = length x
+            rots = n `mod` l
+        in (drop rots x) ++ (take rots x)
+ |n<0 = let l = length x
+            rots = l - ((-n) `mod` l)
+        in (drop rots x) ++ (take rots x)
+
+{-  10 Problem 20
+(*) Remove the K'th element from a list.
+Example in Haskell:
+*Main> removeAt 2 "abcd"
+('b',"acd") -}        
+
+removeAt :: Int -> [a] -> (a,[a])
+removeAt _ [] = error "Cant remove from empty list"
+removeAt n x
+ | n < 1 || n > (length x) = error "Index out of bounds 1 - length"
+ | otherwise = (x!!(n-1),(take (n-1) x) ++ (drop n x))

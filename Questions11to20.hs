@@ -35,10 +35,8 @@ P12> decodeModified [Multiple 4 'a',Single 'b',Multiple 2 'c',Multiple 2 'a',Sin
 
 decodeModified :: [MultiOrSingle a] -> [a]
 decodeModified [] = []
-decodeModified ((Single x):xs) = [x]++decodeModified xs
-decodeModified ((Multiple n e):xs) 
- | n>1 = [e] ++ (decodeModified ((Multiple (n-1) e):xs))
- | n == 1 = [e] ++ (decodeModified xs)
+decodeModified ((Single x):xs)     = x : decodeModified xs
+decodeModified ((Multiple n e):xs) = (replicate n e) ++ decodeModified xs
 
 {- Problem 13
 (**) Run-length encoding of a list (direct solution).
@@ -51,8 +49,8 @@ P13> encodeDirect "aaaabccaadeeee"
 encodeDirect :: (Eq a) => [a] -> [MultiOrSingle a]
 encodeDirect [] = []
 encodeDirect (x:xs) = let count = length (takeWhile (==x) (x:xs))
-                          rest = dropWhile (==x) (xs)
-                      in if count == 1 then ([Single x] ++ (encodeDirect rest)) else ([Multiple count x] ++ (encodeDirect rest))
+                          rest  = dropWhile (==x) (xs)
+                      in if count == 1 then (Single x : (encodeDirect rest)) else (Multiple count x : (encodeDirect rest))
 
 {- Problem 14
 (*) Duplicate the elements of a list.
@@ -62,7 +60,7 @@ Example in Haskell:
 
 dupli :: [a] -> [a]
 dupli [] = []
-dupli (x:xs) = [x,x]++dupli xs
+dupli (x:xs) = [x,x] ++ dupli xs
 
 {- Problem 15
 (**) Replicate the elements of a list a given number of times.
@@ -86,8 +84,8 @@ dropEvery :: [a] -> Int -> [a]
 dropEvery [] _ = []
 dropEvery x n
  | n > (length x) = x
- | n < 1 = x
- | otherwise = (take (n-1) x) ++ (dropEvery (drop n x) n)
+ | n < 1          = x
+ | otherwise      = (take (n-1) x) ++ (dropEvery (drop n x) n)
 
 {- Problem 17
 (*) Split a list into two parts; the length of the first part is given.
@@ -99,9 +97,9 @@ Example in Haskell:
 split :: [a] -> Int -> ([a],[a])
 split [] _ = ([],[])
 split x n
- |n<1 = ([],x)
- |n>((length x)-1) = (x,[])
- |otherwise = (take n x, drop n x)
+ |n < 1         = ([],x)
+ |n >= length x = (x,[])
+ |otherwise     = (take n x, drop n x)
 
 {- Problem 18
 (**) Extract a slice from a list.
@@ -113,11 +111,11 @@ Example in Haskell:
 slice :: [a] -> Int -> Int -> [a]
 slice [] _ _ = []
 slice x a b
- |a < 1 = x
+ |a < 1          = x
  |b > (length x) = x
- |a > b = []
- |a == b = [x !! (a-1)]
- |otherwise = take (b-a+1) $ drop (a-1) x
+ |a > b          = []
+ |a == b         = [x !! (a-1)]
+ |otherwise      = take (b-a+1) $ drop (a-1) x
 
 {-  Problem 19
 
@@ -130,13 +128,13 @@ Examples in Haskell:
 "ghabcdef" -}
 
 rotate :: [a] -> Int -> [a]
-rotate x 0 = x
+rotate x 0  = x
 rotate [] _ = []
 rotate x n
- |n>0 = let l = length x
+ |n>0 = let l    = length x
             rots = n `mod` l
         in (drop rots x) ++ (take rots x)
- |n<0 = let l = length x
+ |n<0 = let l    = length x
             rots = l - ((-n) `mod` l)
         in (drop rots x) ++ (take rots x)
 
@@ -150,4 +148,4 @@ removeAt :: Int -> [a] -> (a,[a])
 removeAt _ [] = error "Cant remove from empty list"
 removeAt n x
  | n < 1 || n > (length x) = error "Index out of bounds 1 - length"
- | otherwise = (x!!(n-1),(take (n-1) x) ++ (drop n x))
+ | otherwise               = (x!!(n-1),(take (n-1) x) ++ (drop n x))

@@ -1,3 +1,5 @@
+module Questions1to10 where
+
 -- Questions 1 to 10 -  LISTS
 
 {- Problem 1
@@ -109,7 +111,7 @@ Example in Haskell:
 
 compress :: (Eq a) => [a] -> [a]
 compress [] = []
-compress (x:xs) = [x] ++ (compress (dropWhile (==x) xs))
+compress (x:xs) = x : (compress $ dropWhile (==x) xs)
 
 
 {- Problem 9
